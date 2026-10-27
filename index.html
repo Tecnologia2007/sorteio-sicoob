@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sorteio Sicoob</title>
+
+  <!-- Fonte Manrope (Sicoob Design System) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       SICOOB DESIGN SYSTEM — TOKENS
+    ============================================================ */
+    :root {
+      --color-primary:      #00A88F; /* Persian Green */
+      --color-primary-soft: #E6F7F5;
+      --color-dark:         #003641; /* Cyprus */
+      --color-accent:       #A6D900; /* Lima */
+      --color-bg:           #F0F2F5; /* Athens Gray */
+      --color-card:         #FFFFFF;
+      --color-text:         #1A2B30;
+      --color-text-muted:   #6B7E82;
+      --color-border:       #D8E0E2;
+      --color-error:        #E6004C;
+      --color-error-soft:   #FDEDF2;
+      --radius-sm:          8px;
+      --radius-md:          16px;
+      --radius-pill:        9999px;
+      --shadow-card:        0 2px 8px rgba(0,54,65,.10);
+      --shadow-hover:       0 4px 16px rgba(0,168,143,.18);
+      --font:               'Manrope', sans-serif;
+      --transition:         .2s ease;
+    }
+
+    /* ============================================================
+       RESET & BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--color-bg);
+      color: var(--color-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ============================================================
+       HEADER
+    ============================================================ */
+    header {
+      background: var(--color-dark);
+      color: #fff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.18);
+    }
+
+    header .logo {
+      width: 38px;
+      height: 38px;
+      background: var(--color-primary);
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -.3px;
+    }
+
+    header span.badge {
+      margin-left: auto;
+      background: var(--color-accent);
+      color: var(--color-dark);
+      font-size: .72rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: var(--radius-pill);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    /* ============================================================
+       LAYOUT PRINCIPAL
+    ============================================================ */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      max-width: 960px;
+      width: 100%;
+      margin: 32px auto;
+      padding: 0 24px;
+    }
+
+    @media (max-width: 680px) {
+      main { grid-template-columns: 1fr; margin: 20px auto; }
+    }
+
+    /* ============================================================
+       CARD
+    ============================================================ */
+    .card {
+      background: var(--color-card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-card);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-sm);
+      background: var(--color-primary-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    /* ============================================================
+       FORMULÁRIO — ADICIONAR PARTICIPANTE
+    ============================================================ */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    input[type="text"] {
+      padding: 12px 14px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: .95rem;
+      color: var(--color-text);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      background: #fff;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(0,168,143,.12);
+    }
+
+    input[type="text"].error {
+      border-color: var(--color-error);
+      background: var(--color-error-soft);
+    }
+
+    .error-msg {
+      font-size: .78rem;
+      color: var(--color-error);
+      display: none;
+    }
+
+    .error-msg.show { display: block; }
+
+    /* ============================================================
+       BOTÕES
+    ============================================================ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font);
+      font-size: .92rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: #fff;
+    }
+    .btn-primary:hover  { background: #009c84; box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--color-primary);
+      border: 1.5px solid var(--color-primary);
+    }
+    .btn-outline:hover { background: var(--color-primary-soft); }
+
+    .btn-dark {
+      background: var(--color-dark);
+      color: #fff;
+    }
+    .btn-dark:hover { background: #00495c; box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+    .btn-dark:active { transform: translateY(0); }
+
+    .btn-accent {
+      background: var(--color-accent);
+      color: var(--color-dark);
+    }
+    .btn-accent:hover { background: #bae800; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(166,217,0,.30); }
+
+    .btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* ============================================================
+       LISTA DE PARTICIPANTES
+    ============================================================ */
+    .participant-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    /* scrollbar suave */
+    .participant-list::-webkit-scrollbar { width: 4px; }
+    .participant-list::-webkit-scrollbar-track { background: var(--color-bg); border-radius: 4px; }
+    .participant-list::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 4px; }
+
+    .participant-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      background: var(--color-bg);
+      font-size: .9rem;
+      font-weight: 500;
+      animation: slideIn .22s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .participant-list li .avatar {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-pill);
+      background: var(--color-primary);
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .participant-list li .name { flex: 1; }
+
+    .participant-list li .btn-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-text-muted);
+      font-size: 16px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color var(--transition), background var(--transition);
+    }
+    .participant-list li .btn-remove:hover { color: var(--color-error); background: var(--color-error-soft); }
+
+    .empty-state {
+      text-align: center;
+      color: var(--color-text-muted);
+      font-size: .88rem;
+      padding: 24px 0;
+    }
+
+    .counter-badge {
+      background: var(--color-primary);
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      margin-left: auto;
+    }
+
+    /* ============================================================
+       PAINEL DE SORTEIO
+    ============================================================ */
+    .sorteio-panel {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Tambor / Roleta visual */
+    .drum {
+      width: 180px;
+      height: 180px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, var(--color-dark) 0%, #00596e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(0,54,65,.22);
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+
+    .drum::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-pill);
+      background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.12) 0%, transparent 60%);
+    }
+
+    .drum-text {
+      font-size: 3.5rem;
+      z-index: 1;
+      transition: transform .1s;
+    }
+
+    /* Animação de giro */
+    .drum.spinning .drum-text {
+      animation: spin .1s linear infinite;
+    }
+
+    @keyframes spin {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(.85); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* Exibição do vencedor */
+    .winner-box {
+      background: linear-gradient(135deg, var(--color-primary-soft), #fff);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      width: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .winner-box.show { display: flex; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.7); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .winner-label {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--color-primary);
+    }
+
+    .winner-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--color-dark);
+    }
+
+    .winner-confetti { font-size: 1.6rem; }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .btn-group .btn { flex: 1; }
+
+    /* ============================================================
+       HISTÓRICO
+    ============================================================ */
+    .history-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .history-list li {
+      font-size: .82rem;
+      color: var(--color-text-muted);
+      padding: 6px 10px;
+      background: var(--color-bg);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .history-list li .pos {
+      background: var(--color-dark);
+      color: #fff;
+      border-radius: var(--radius-pill);
+      font-size: .68rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      text-align: center;
+      padding: 16px;
+      font-size: .78rem;
+      color: var(--color-text-muted);
+      background: var(--color-card);
+      border-top: 1px solid var(--color-border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="logo">🎲</div>
+    <h1>Sorteio</h1>
+    <span class="badge">Sicoob</span>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+
+    <!-- COLUNA ESQUERDA: participantes -->
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">👥</div>
+        Participantes
+        <span class="counter-badge" id="counter">0</span>
+      </div>
+
+      <!-- Adicionar participante -->
+      <div class="input-group">
+        <label for="inputName">Nome do participante</label>
+        <input id="inputName" type="text" placeholder="Digite o nome..." maxlength="50" />
+        <span class="error-msg" id="errorMsg">⚠ Informe um nome válido.</span>
+      </div>
+
+      <button class="btn btn-primary" onclick="addParticipant()">
+        ➕ Adicionar
+      </button>
+
+      <!-- Lista -->
+      <ul class="participant-list" id="participantList">
+        <li class="empty-state" id="emptyState">Nenhum participante ainda.</li>
+      </ul>
+
+      <!-- Limpar todos -->
+      <button class="btn btn-outline" onclick="clearAll()" id="btnClear" disabled>
+        🗑️ Limpar lista
+      </button>
+    </div>
+
+    <!-- COLUNA DIREITA: sorteio -->
+    <div class="card">
+      <div class="card-title">
+        <div class="icon">🎯</div>
+        Sortear
+      </div>
+
+      <!-- Drum visual -->
+      <div class="sorteio-panel">
+        <div class="drum" id="drum">
+          <span class="drum-text" id="drumText">🎲</span>
+        </div>
+
+        <!-- Resultado do vencedor -->
+        <div class="winner-box" id="winnerBox">
+          <span class="winner-confetti">🎉</span>
+          <span class="winner-label">Vencedor(a)</span>
+          <span class="winner-name" id="winnerName">—</span>
+        </div>
+
+        <!-- Botões de ação -->
+        <div class="btn-group">
+          <button class="btn btn-accent" id="btnSortear" onclick="startDraw()" disabled>
+            🎰 Sortear!
+          </button>
+          <button class="btn btn-dark" id="btnNovamente" onclick="resetDraw()" style="display:none">
+            🔄 Novo
+          </button>
+        </div>
+      </div>
+
+      <!-- Histórico de sorteios -->
+      <div id="historySection" style="display:none">
+        <div class="card-title" style="font-size:.88rem; margin-bottom:8px;">
+          <div class="icon" style="font-size:13px; width:24px; height:24px;">📋</div>
+          Histórico
+        </div>
+        <ul class="history-list" id="historyList"></ul>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    Sorteio Sicoob &copy; 2026 — Desenvolvido com Antigravity
+  </footer>
+
+  <!-- ===== SCRIPT ===== -->
+  <script>
+    // ----------------------------------------------------------------
+    // Estado da aplicação
+    // ----------------------------------------------------------------
+    let participants = [];
+    let history     = [];
+    let isSpinning  = false;
+    let spinInterval = null;
+
+    // ----------------------------------------------------------------
+    // Adicionar participante
+    // ----------------------------------------------------------------
+    function addParticipant() {
+      const input    = document.getElementById('inputName');
+      const errorMsg = document.getElementById('errorMsg');
+      const name     = input.value.trim();
+
+      // Validação
+      if (!name || name.length < 2) {
+        input.classList.add('error');
+        errorMsg.classList.add('show');
+        input.focus();
+        return;
+      }
+
+      // Nome duplicado
+      if (participants.map(p => p.toLowerCase()).includes(name.toLowerCase())) {
+        input.classList.add('error');
+        errorMsg.textContent = '⚠ Esse nome já foi adicionado.';
+        errorMsg.classList.add('show');
+        input.focus();
+        return;
+      }
+
+      input.classList.remove('error');
+      errorMsg.classList.remove('show');
+      errorMsg.textContent = '⚠ Informe um nome válido.';
+
+      participants.push(name);
+      input.value = '';
+      input.focus();
+
+      renderList();
+    }
+
+    // ----------------------------------------------------------------
+    // Renderizar lista de participantes
+    // ----------------------------------------------------------------
+    function renderList() {
+      const list     = document.getElementById('participantList');
+      const empty    = document.getElementById('emptyState');
+      const counter  = document.getElementById('counter');
+      const btnSort  = document.getElementById('btnSortear');
+      const btnClear = document.getElementById('btnClear');
+
+      counter.textContent = participants.length;
+      btnSort.disabled    = participants.length < 2;
+      btnClear.disabled   = participants.length === 0;
+
+      // Remove itens anteriores (exceto o emptyState)
+      Array.from(list.children).forEach(el => {
+        if (!el.id) el.remove();
+      });
+
+      if (participants.length === 0) {
+        empty.style.display = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+
+      participants.forEach((name, idx) => {
+        const li = document.createElement('li');
+
+        // Avatar com inicial
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = name.charAt(0).toUpperCase();
+
+        // Nome
+        const nameEl = document.createElement('span');
+        nameEl.className = 'name';
+        nameEl.textContent = name;
+
+        // Botão remover
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-remove';
+        removeBtn.title = 'Remover';
+        removeBtn.textContent = '✕';
+        removeBtn.onclick = () => removeParticipant(idx);
+
+        li.appendChild(avatar);
+        li.appendChild(nameEl);
+        li.appendChild(removeBtn);
+        list.appendChild(li);
+      });
+    }
+
+    // ----------------------------------------------------------------
+    // Remover participante
+    // ----------------------------------------------------------------
+    function removeParticipant(idx) {
+      participants.splice(idx, 1);
+      resetDraw(false); // reseta resultado se houver
+      renderList();
+    }
+
+    // ----------------------------------------------------------------
+    // Limpar lista
+    // ----------------------------------------------------------------
+    function clearAll() {
+      if (!confirm('Deseja remover todos os participantes?')) return;
+      participants = [];
+      resetDraw(false);
+      renderList();
+    }
+
+    // ----------------------------------------------------------------
+    // Iniciar animação de sorteio
+    // ----------------------------------------------------------------
+    function startDraw() {
+      if (isSpinning || participants.length < 2) return;
+      isSpinning = true;
+
+      const drum      = document.getElementById('drum');
+      const drumText  = document.getElementById('drumText');
+      const winnerBox = document.getElementById('winnerBox');
+      const btnSort   = document.getElementById('btnSortear');
+      const btnNov    = document.getElementById('btnNovamente');
+
+      winnerBox.classList.remove('show');
+      drum.classList.add('spinning');
+      btnSort.disabled = true;
+
+      const emojis = ['🎲', '⭐', '🎯', '🏆', '✨', '🎪', '🎡'];
+      let ticks = 0;
+      const totalTicks = 22 + Math.floor(Math.random() * 10);
+
+      spinInterval = setInterval(() => {
+        // Mostra nome aleatório durante o giro
+        drumText.textContent = emojis[ticks % emojis.length];
+        ticks++;
+
+        if (ticks >= totalTicks) {
+          clearInterval(spinInterval);
+          finalizeDraw();
+        }
+      }, 110);
+    }
+
+    // ----------------------------------------------------------------
+    // Finalizar sorteio — escolher vencedor
+    // ----------------------------------------------------------------
+    function finalizeDraw() {
+      const drum      = document.getElementById('drum');
+      const drumText  = document.getElementById('drumText');
+      const winnerBox = document.getElementById('winnerBox');
+      const winnerName= document.getElementById('winnerName');
+      const btnNov    = document.getElementById('btnNovamente');
+
+      // Escolha aleatória
+      const idx    = Math.floor(Math.random() * participants.length);
+      const winner = participants[idx];
+
+      drum.classList.remove('spinning');
+      drumText.textContent = '🏆';
+
+      // Exibe vencedor
+      winnerName.textContent = winner;
+      winnerBox.classList.add('show');
+
+      // Histórico
+      history.unshift({ pos: history.length + 1, name: winner });
+      renderHistory();
+
+      btnNov.style.display = '';
+      isSpinning = false;
+    }
+
+    // ----------------------------------------------------------------
+    // Resetar resultado
+    // ----------------------------------------------------------------
+    function resetDraw(resetBtn = true) {
+      if (spinInterval) { clearInterval(spinInterval); isSpinning = false; }
+
+      const drum      = document.getElementById('drum');
+      const drumText  = document.getElementById('drumText');
+      const winnerBox = document.getElementById('winnerBox');
+      const btnSort   = document.getElementById('btnSortear');
+      const btnNov    = document.getElementById('btnNovamente');
+
+      drum.classList.remove('spinning');
+      drumText.textContent = '🎲';
+      winnerBox.classList.remove('show');
+
+      if (resetBtn) {
+        btnNov.style.display = 'none';
+        btnSort.disabled = participants.length < 2;
+      }
+    }
+
+    // ----------------------------------------------------------------
+    // Renderizar histórico
+    // ----------------------------------------------------------------
+    function renderHistory() {
+      const section = document.getElementById('historySection');
+      const list    = document.getElementById('historyList');
+
+      section.style.display = history.length ? '' : 'none';
+      list.innerHTML = '';
+
+      history.slice(0, 10).forEach(({ pos, name }) => {
+        const li  = document.createElement('li');
+        const pos_ = document.createElement('span');
+        pos_.className   = 'pos';
+        pos_.textContent = `#${pos}`;
+        li.appendChild(pos_);
+        li.appendChild(document.createTextNode(name));
+        list.appendChild(li);
+      });
+    }
+
+    // ----------------------------------------------------------------
+    // Enter no input adiciona participante
+    // ----------------------------------------------------------------
+    document.getElementById('inputName').addEventListener('keydown', e => {
+      if (e.key === 'Enter') addParticipant();
+    });
+
+    // Remove estilo de erro ao digitar
+    document.getElementById('inputName').addEventListener('input', () => {
+      document.getElementById('inputName').classList.remove('error');
+      document.getElementById('errorMsg').classList.remove('show');
+    });
+  </script>
+
+</body>
+</html>
